@@ -43,6 +43,8 @@ percRank <- function(x) trunc(rank(x))/length(x)
 #'
 #' @param xAxisTitle The x Axis title
 #'
+#' @param colorType Specify the theme to use for the chart (either Verasite or Uber)
+#'
 #' @return Returns a highchart object
 #'
 #' @examples
@@ -51,9 +53,14 @@ percRank <- function(x) trunc(rank(x))/length(x)
 #' }
 #' @export
 
-densityChartWMean <- function(yValue,title,subTitle,xAxisTitle){
+densityChartWMean <- function(yValue,title,subTitle,xAxisTitle,colorType){
   require(dplyr)
   require(highcharter)
+
+  colors = colorSchemes %>%
+    filter(theme == colorType) %>%
+    collect %>%
+    .[["colors"]]
 
   highchart() %>%
     # hc_yAxis(title = list(text = "Density")) %>%
@@ -66,25 +73,47 @@ densityChartWMean <- function(yValue,title,subTitle,xAxisTitle){
     hc_title(text = title) %>%
     hc_subtitle(text = subTitle) %>%
     hc_xAxis(list(title = list(text = xAxisTitle),
-                  plotLines = list(list(value = as.numeric(quantile(yValue,0.02)), color = "#12939A", width = 3, zIndex = 4,
+                  plotLines = list(list(value = as.numeric(quantile(yValue,0.02)), color = colors[1], width = 3, zIndex = 4,
                                         label = list(text = paste0("P2: ",round(as.numeric(quantile(yValue,0.02)),2)),
-                                                     style = list(color = "#12939A", fontWeight = "bold"))),
-                                   list(value = as.numeric(mean(yValue)), color = "#FF991F", width = 3, zIndex = 4,
+                                                     style = list(color = colors[1], fontWeight = "bold"))),
+                                   list(value = as.numeric(mean(yValue)), color = colors[2], width = 3, zIndex = 4,
                                         label = list(text = paste0("Mean: ",round(as.numeric(mean(yValue)),2)),
                                                      verticalAlign = "middle",
-                                                     style = list(color = "#FF991F", fontWeight = "bold"))),
-                                   list(value = as.numeric(quantile(yValue,0.05)), color = "#12939A", width = 3, zIndex = 4,
+                                                     style = list(color = colors[2], fontWeight = "bold"))),
+                                   list(value = as.numeric(quantile(yValue,0.05)), color = colors[1], width = 3, zIndex = 4,
                                         label = list(text = paste0("P5: ",round(as.numeric(quantile(yValue,0.05)),2)),
-                                                     style = list(color = "#12939A", fontWeight = "bold"))),
-                                   list(value = as.numeric(quantile(yValue,0.50)), color = "#12939A", width = 3, zIndex = 4,
+                                                     style = list(color = colors[1], fontWeight = "bold"))),
+                                   list(value = as.numeric(quantile(yValue,0.50)), color = colors[1], width = 3, zIndex = 4,
                                         label = list(text = paste0("P50: ",round(as.numeric(quantile(yValue,0.50)),2)),
-                                                     style = list(color = "#12939A", fontWeight = "bold"))),
-                                   list(value = as.numeric(quantile(yValue,0.95)), color = "#12939A", width = 3, zIndex = 4,
+                                                     style = list(color = colors[1], fontWeight = "bold"))),
+                                   list(value = as.numeric(quantile(yValue,0.95)), color = colors[1], width = 3, zIndex = 4,
                                         label = list(text = paste0("P95: ",round(as.numeric(quantile(yValue,0.95)),2)),
-                                                     style = list(color = "#12939A", fontWeight = "bold"))),
-                                   list(value = as.numeric(quantile(yValue,0.98)), color = "#12939A", width = 3, zIndex = 4,
+                                                     style = list(color = colors[1], fontWeight = "bold"))),
+                                   list(value = as.numeric(quantile(yValue,0.98)), color = colors[1], width = 3, zIndex = 4,
                                         label = list(text = paste0("P98: ",round(as.numeric(quantile(yValue,0.98)),2)),
-                                                     style = list(color = "#12939A", fontWeight = "bold")))
+                                                     style = list(color = colors[1], fontWeight = "bold")))
                   )
     ))
 }
+
+#' Color Schemes
+#'
+#' Color schemes for use with graphs
+#'
+#' @docType data
+#'
+#' @usage data(colorSchemes)
+#'
+#' @format An object of class \code{"data.frame"}; see \code{\link[shinyStats]{densityChartWMean}}.
+#'
+#' @keywords datasets
+#'
+#' @references Moore et al. (2013) Genetics 195:1077-1086
+#' (\href{http://www.ncbi.nlm.nih.gov/pubmed/23979570}{PubMed})
+#'
+#' @source \href{http://www.jordandeherrera.com}{Verasite Template}
+#'
+#' @examples
+#' data(colorSchemes)
+#' \donttest{densityChart(mtcars$mpg,"MPG Test","Sample Density Chart","MPG","Uber")}
+"colorSchemes"

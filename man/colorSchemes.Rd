@@ -16,7 +16,7 @@ Color schemes for use with graphs
 }
 \examples{
 data(colorSchemes)
-\donttest{iplotCurves(phe, times)}
+\donttest{densityChart(mtcars$mpg,"MPG Test","Sample Density Chart","MPG","Uber")}
 }
 \references{
 Moore et al. (2013) Genetics 195:1077-1086

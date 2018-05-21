@@ -66,9 +66,9 @@ densityChartWMean <- function(yValue,title,subTitle,xAxisTitle,colorType){
     # hc_yAxis(title = list(text = "Density")) %>%
     hc_yAxis_multiples(
       list(lineWidth = 3, title = list(text = "Density"), labels = list(enabled = FALSE)),
-      list(showLastLabel = FALSE, opposite = TRUE, title = list(text = "Count"))
+      list(showLastLabel = FALSE, opposite = TRUE, title = list(text = ""))
     ) %>%
-    hc_add_series(type = "areaspline",data = density(yValue, kernel = "gaussian"), name = "Density Distribution") %>%
+    hc_add_series(type = "areaspline",data = density(yValue, kernel = "gaussian"), name = "Density Distribution", color = colors[3]) %>%
     # hc_add_series(data = data.frame(x = hist(yValue)$mids, y = hist(yValue)$counts), type = "spline", yAxis = 1, name = "Population Count") %>%
     hc_title(text = title) %>%
     hc_subtitle(text = subTitle) %>%
@@ -93,7 +93,8 @@ densityChartWMean <- function(yValue,title,subTitle,xAxisTitle,colorType){
                                         label = list(text = paste0("P98: ",round(as.numeric(quantile(yValue,0.98)),2)),
                                                      style = list(color = colors[1], fontWeight = "bold")))
                   )
-    ))
+    )) %>%
+    hc_add_theme(hc_theme_elementary())
 }
 
 #' Color Schemes

@@ -17,9 +17,123 @@ hello <- function() {
   print("Hello, world!")
 }
 
+#' Shifted Beta Gamma Model Parameter Estimates
+#'
+#' This function estimates parameters for the shifed beta gamma distribution (often used in survival curves)
+#' and used by the \code{\link{survivalCurve}} function.
+#'
+#' @param active.vec Numeric vector representing active members
+#'
+#' @param lost.vec Numeric vector representing lost members
+#'
+#' @return Returns a vector of parameters (alpha and beta)
+#'
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#' library(titanic)
+#' titanic::titanic_train %>%
+#' mutate(Deceased = ifelse(Survived == 1,0,1)) %>%
+#' group_by(Age = round(Age,0)) %>%
+#' summarise(Survived = sum(Survived), Deceased = sum(Deceased)) %>% {
+#' sBG.est(
+#' .$Survived[2:nrow(.)],
+#' .$Deceased[2:nrow(.)]
+#' )$par}
+#' }
+#' @export
+
+sBG.est <- function(active.vec, lost.vec) {
+  require(dplyr)
+  require(purrr)
+
+  sbg.loglik <- function(params) {
+
+    # Set parameters
+    a      <- params[1]
+    b      <- params[2]
+
+    # Forward recursion
+    loglik <-
+      1:length(lost.vec) %>%
+      purrr::reduce(
+        function(.x, .y) {
+          .x + lost.vec[.y] * log(beta(a + 1, b + .y - 1)/beta(a, b))
+        },
+        .init = 0
+      )
+
+    # Final line (for active)
+    loglik <- loglik + active.vec[length(lost.vec)] * log(beta(a, b + length(lost.vec))/beta(a, b))
+
+    # Maximize log likelihood
+    return(-loglik)
+  }
+
+  return(
+    stats::optim(
+      par = c(1,1),
+      sbg.loglik
+    )
+  )
+}
+
+#' Survival Curve
+#'
+#' This function creates a survival curve based on an \code{\link{sBG.est}} model parameters.
+#'
+#' @param alpha Alpha parameter
+#'
+#' @param beta Beta parameter
+#'
+#' @param t iterations
+#'
+#' @return Returns a vector of survival percent estimates
+#'
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#' library(titanic)
+#' titanic::titanic_train %>%
+#' mutate(Deceased = ifelse(Survived == 1,0,1)) %>%
+#' group_by(Age = round(Age,0)) %>%
+#' summarise(Survived = sum(Survived), Deceased = sum(Deceased)) %>% {
+#' sBG.est(
+#' .$Survived[2:nrow(.)],
+#' .$Deceased[2:nrow(.)]
+#' )$par} %>% {
+#' survivalCurve(.[1], .[2], 50)
+#' }
+#' }
+#' @export
+
+survivalCurve <- function (alpha, beta, t = 96) {
+  require(purrr)
+  # Produce a vector describing the survival curve
+  # Inputs:
+  #   alpha, beta: parameters estimated from sBG.est
+  #   t          : number of iterations
+  #   single     : if only last value is needed, FALSE by default
+  # Output:
+  #   vector: vector of survival percentages starting at 1 up to t
+
+  seq(1:t) %>%
+    map_dbl(
+      function(time) {
+        (beta + time - 1)/(alpha + beta + time - 1)
+      }
+    ) %>%
+    purrr::accumulate(
+      function(.x, .y) {
+        .x * .y
+      },
+      .init = 1
+    )
+}
+
 #' Percent Rank
 #'
-#' This is a function taken from /href{https://stats.stackexchange.com/questions/11924/computing-percentile-rank-in-r}{Stack Overflow} that creates a percentile rank of a quantitative field.  This is useful for creating cumulative and power law distributions.
+#' This is a function taken from \href{https://stats.stackexchange.com/questions/11924/computing-percentile-rank-in-r}{Stack Overflow} that creates a percentile rank of a quantitative field.  This is useful for creating cumulative and power law distributions.
 #'
 #' @param x The quantitative field from which to create the percentile rank.
 #'

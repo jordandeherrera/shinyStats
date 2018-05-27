@@ -2,3 +2,5 @@
 
 export(densityChartWMean)
 export(percRank)
+export(sBG.est)
+export(survivalCurve)

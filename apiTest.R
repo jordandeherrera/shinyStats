@@ -45,7 +45,16 @@ App <- oauth_app("JDTest",
 QBOtoken <- oauth2.0_token(endpoint = endPoint,
                            app = App,
                            scope = "com.intuit.quickbooks.accounting",
-                           type = "code",
+                           # type = "code",
                            cache = T)
 
-GET("https://sandbox-quickbooks.api.intuit.com/v3/company/123146073984434/query?query=select%20%2a%20from%20Customer&minorversion=4", config(token = QBOtoken))
+test <- GET("https://sandbox-quickbooks.api.intuit.com/v3/company/123146073984434/query?query=select%20%2a%20from%20Customer&minorversion=4", config(token = QBOtoken))
+stop_for_status(test)
+customer_list <- content(test)
+lapply(1:length(customer_list$QueryResponse$Customer),
+       function(i){
+         as.data.frame(stringsAsFactors = FALSE,
+                       customer_list$QueryResponse$Customer[i])
+         }) %>%
+  purrr::reduce(dplyr::bind_rows) ->
+  customerList

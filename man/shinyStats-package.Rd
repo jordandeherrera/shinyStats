@@ -24,6 +24,10 @@ The package contains functions that fall into the following general categories: 
 
 \code{\link{survivalCurve}} - creates a survival curve based off of beta model
 
+\code{\link{h_mean}} - calculate the harmonic mean for a set of numbers
+
+\code{\link{gm_mean}} - calculate the geometric mean for a set of numbers
+
 }
 
 

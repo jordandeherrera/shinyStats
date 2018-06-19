@@ -145,6 +145,40 @@ survivalCurve <- function (alpha, beta, t = 96) {
 
 percRank <- function(x) trunc(rank(x))/length(x)
 
+#' Harmonic Mean
+#'
+#' This is a function taken from the blog \href{https://statistic-on-air.blogspot.com/2009/07/geometric-and-harmonic-means-in-r.html}{Statistics on aiR} that calculates the harmonic mean of a set of numbers.  Along with the \code{\link[shinyStats]{gm_mean}} and \code{\link[base]{mean}} it provides the three most basic functions of "average." Typically, the arithmetic mean should be used for linear relationships, the geometric mean should be used for exponential or multiplicative relationships, and the harmonic mean should be used for reciprocal relationships.
+#'
+#' @param x The quantitative field from which to calculate the harmonic mean.
+#'
+#' @return Returns a numeric which is the harmonic mean
+#' 
+#' @source \href{https://towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0}{592862722639. “On Average, You're Using the Wrong Average: Geometric & Harmonic Means in Data Analysis.” Towards Data Science, Towards Data Science, 28 Jan. 2018, towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0.}
+#'
+#' @examples
+#' \dontrun{h_mean(mtcars$mpg)}
+#' @export
+
+h_mean <- function(x) 1 / mean(1/x,na.rm = TRUE)
+
+#' Geometric Mean
+#'
+#' This is a function taken from the blog \href{https://stackoverflow.com/questions/2602583/geometric-mean-is-there-a-built-in}{Stack Overflow} that calculates the geometric mean of a set of numbers.  Along with the \code{\link[shinyStats]{h_mean}} and \code{\link[base]{mean}} functions, they provide the three most basic functions of "average." Typically, the arithmetic mean should be used for linear relationships, the geometric mean should be used for exponential or multiplicative relationships, and the harmonic mean should be used for reciprocal relationships.
+#'
+#' @param x The quantitative field from which to calculate the geometric mean.
+#'
+#' @return Returns a numeric which is the geometric mean
+#' 
+#' @source \href{https://towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0}{592862722639. “On Average, You're Using the Wrong Average: Geometric & Harmonic Means in Data Analysis.” Towards Data Science, Towards Data Science, 28 Jan. 2018, towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0.}
+#'
+#' @examples
+#' \dontrun{gm_mean(mtcars$mpg)}
+#' @export
+
+gm_mean <- function(x, na.rm=TRUE){
+  exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+}
+
 #' Density Chart with Meank
 #'
 #' This is a function that creates a density chart based on raw values in a population.

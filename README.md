@@ -5,5 +5,5 @@ This is a simple R package for creating sBG (shifted beta geometric) curves for 
 # Installation Instructions
 
 '''r
-devtools::install_github("jsdeherrera/shinyStats")
+  devtools::install_github("jsdeherrera/shinyStats")
 '''

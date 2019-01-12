@@ -152,7 +152,7 @@ percRank <- function(x) trunc(rank(x))/length(x)
 #' @param x The quantitative field from which to calculate the harmonic mean.
 #'
 #' @return Returns a numeric which is the harmonic mean
-#' 
+#'
 #' @source \href{https://towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0}{592862722639. “On Average, You're Using the Wrong Average: Geometric & Harmonic Means in Data Analysis.” Towards Data Science, Towards Data Science, 28 Jan. 2018, towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0.}
 #'
 #' @examples
@@ -168,7 +168,7 @@ h_mean <- function(x) 1 / mean(1/x,na.rm = TRUE)
 #' @param x The quantitative field from which to calculate the geometric mean.
 #'
 #' @return Returns a numeric which is the geometric mean
-#' 
+#'
 #' @source \href{https://towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0}{592862722639. “On Average, You're Using the Wrong Average: Geometric & Harmonic Means in Data Analysis.” Towards Data Science, Towards Data Science, 28 Jan. 2018, towardsdatascience.com/on-average-youre-using-the-wrong-average-geometric-harmonic-means-in-data-analysis-2a703e21ea0.}
 #'
 #' @examples
@@ -266,3 +266,71 @@ densityChartWMean <- function(yValue,title,subTitle,xAxisTitle,colorType){
 #' data(colorSchemes)
 #' \donttest{densityChart(mtcars$mpg,"MPG Test","Sample Density Chart","MPG","Uber")}
 "colorSchemes"
+
+#' Comparison Density Chart with Mean and Median
+#'
+#' This is a function that creates a density chart based on raw values in a population.
+#'
+#' @param yValue1 The quantitative field for series 1 from which to create the density chart.
+#'
+#' @param yValue1 The quantitative field for series 2 from which to create the density chart.
+#'
+#' @param yValue1Name The label for the distribution of the density chart for the first series.
+#'
+#' @param yValue2Name The label for the distribution of the density chart for the second series.
+#'
+#' @param title The title of the chart
+#'
+#' @param subTitle The subtitle of the chart
+#'
+#' @param xAxisTitle The x Axis title
+#'
+#' @param colorType Specify the theme to use for the chart (either Verasite or Uber)
+#'
+#' @return Returns a highchart object
+#'
+#' @examples
+#' \dontrun{
+#' densityChartWMean(mtcars$cyl,"Density of Cylinders in MT Cars Dataset","Example of density chart","Cylinders")
+#' }
+#' @export
+
+compareDensityChartWMean <- function(yValue1,yValue2,yValue1Name,yValue2Name,title,subTitle,xAxisTitle,colorType){
+  require(dplyr)
+  require(highcharter)
+
+  colors = colorSchemes %>%
+    filter(theme == colorType) %>%
+    collect %>%
+    .[["colors"]]
+
+  highchart() %>%
+    # hc_yAxis(title = list(text = "Density")) %>%
+    hc_yAxis_multiples(
+      list(lineWidth = 3, title = list(text = "Density"), labels = list(enabled = FALSE)),
+      list(showLastLabel = FALSE, opposite = TRUE, title = list(text = ""))
+    ) %>%
+    hc_add_series(type = "areaspline",data = density(yValue1, kernel = "gaussian"), name = yValue1Name, color = colors[3]) %>%
+    hc_add_series(type = "areaspline",data = density(yValue2, kernel = "gaussian"), name = yValue2Name, color = colors[3]) %>%
+    hc_title(text = title) %>%
+    hc_subtitle(text = subTitle) %>%
+    hc_xAxis(list(title = list(text = xAxisTitle),
+                  plotLines = list(list(value = as.numeric(mean(yValue1)), color = colors[2], width = 3, zIndex = 4,
+                                        label = list(text = paste0("Mean of ",yValue1Name,": ",round(as.numeric(mean(yValue)),2)),
+                                                     verticalAlign = "middle",
+                                                     style = list(color = colors[2], fontWeight = "bold"))),
+                                   list(value = as.numeric(quantile(yValue1,0.50)), color = colors[1], width = 3, zIndex = 4,
+                                        label = list(text = paste0("P50 of ",yValue1Name,": ",round(as.numeric(quantile(yValue,0.50)),2)),
+                                                     style = list(color = colors[1], fontWeight = "bold"))),
+                                   list(value = as.numeric(mean(yValue2)), color = colors[2], width = 3, zIndex = 4,
+                                        label = list(text = paste0("Mean of ",yValue2Name,": ",round(as.numeric(mean(yValue)),2)),
+                                                     verticalAlign = "middle",
+                                                     style = list(color = colors[2], fontWeight = "bold"))),
+                                   list(value = as.numeric(quantile(yValue2,0.50)), color = colors[1], width = 3, zIndex = 4,
+                                        label = list(text = paste0("P50 of ",yValue2Name,": ",round(as.numeric(quantile(yValue,0.50)),2)),
+                                                     style = list(color = colors[1], fontWeight = "bold")))
+                                   )
+                  )
+    ) %>%
+    hc_add_theme(hc_theme_elementary())
+}

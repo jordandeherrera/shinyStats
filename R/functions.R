@@ -315,20 +315,16 @@ compareDensityChartWMean <- function(yValue1,yValue2,yValue1Name,yValue2Name,tit
     hc_title(text = title) %>%
     hc_subtitle(text = subTitle) %>%
     hc_xAxis(list(title = list(text = xAxisTitle),
-                  plotLines = list(list(value = as.numeric(mean(yValue1)), color = colors[2], width = 3, zIndex = 4,
-                                        label = list(text = paste0("Mean of ",yValue1Name,": ",round(as.numeric(mean(yValue)),2)),
+                  plotLines = list(list(value = as.numeric(mean(yValue1)), color = colors[1], width = 3, zIndex = 4,
+                                        label = list(text = paste0("Mean of ",yValue1Name,": ",round(as.numeric(mean(yValue1)),2)),
                                                      verticalAlign = "middle",
-                                                     style = list(color = colors[2], fontWeight = "bold"))),
-                                   list(value = as.numeric(quantile(yValue1,0.50)), color = colors[1], width = 3, zIndex = 4,
-                                        label = list(text = paste0("P50 of ",yValue1Name,": ",round(as.numeric(quantile(yValue,0.50)),2)),
-                                                     style = list(color = colors[1], fontWeight = "bold"))),
-                                   list(value = as.numeric(mean(yValue2)), color = colors[2], width = 3, zIndex = 4,
-                                        label = list(text = paste0("Mean of ",yValue2Name,": ",round(as.numeric(mean(yValue)),2)),
+                                                     style = list(color = colors[1], fontWeight = "bold"))
+                                        ),
+                                   list(value = as.numeric(mean(yValue2)), color = colors[1], width = 3, zIndex = 4,
+                                        label = list(text = paste0("Mean of ",yValue2Name,": ",round(as.numeric(mean(yValue2)),2)),
                                                      verticalAlign = "middle",
-                                                     style = list(color = colors[2], fontWeight = "bold"))),
-                                   list(value = as.numeric(quantile(yValue2,0.50)), color = colors[1], width = 3, zIndex = 4,
-                                        label = list(text = paste0("P50 of ",yValue2Name,": ",round(as.numeric(quantile(yValue,0.50)),2)),
-                                                     style = list(color = colors[1], fontWeight = "bold")))
+                                                     style = list(color = colors[1], fontWeight = "bold"))
+                                        )
                                    )
                   )
     ) %>%
